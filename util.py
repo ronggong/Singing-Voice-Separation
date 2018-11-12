@@ -7,8 +7,8 @@ import numpy as np
 from config import *
 
 def LoadAudio(file_path) :
-    y, sr = load(file_path,sr=SR)
-    stft = librosa.stft(y,n_fft=window_size,hop_length=hop_length)
+    y, sr = load(file_path, sr=SR)
+    stft = librosa.stft(y,n_fft=window_size, hop_length=hop_length)
     mag, phase = librosa.magphase(stft)
     return mag.astype(np.float32), phase
 
@@ -18,33 +18,29 @@ def SaveAudio(file_path, mag, phase) :
     librosa.output.write_wav(file_path,y,SR,norm=True)
     print("Save complete!!")
     
-def SaveSpectrogram(y_mix, y_inst,y_vocal, filename, orig_sr=44100) :
-    y_mix = librosa.core.resample(y_mix,orig_sr,SR)
-    y_vocal = librosa.core.resample(y_vocal,orig_sr,SR)
-    y_inst = librosa.core.resample(y_inst,orig_sr,SR)
+def SaveSpectrogram(y_input, y_output, filename, orig_sr_input=44100, orig_sr_output=44100):
+    if orig_sr_input != SR:
+        y_input = librosa.core.resample(y_input, orig_sr_input, SR)
+    if orig_sr_output != SR:
+        y_output = librosa.core.resample(y_output, orig_sr_output, SR)
 
-    S_mix = np.abs(librosa.stft(y_mix,n_fft=window_size,hop_length=hop_length)).astype(np.float32)
-    S_inst = np.abs(librosa.stft(y_inst,n_fft=window_size,hop_length=hop_length)).astype(np.float32)
-    S_vocal = np.abs(librosa.stft(y_vocal,n_fft=window_size,hop_length=hop_length)).astype(np.float32)
+    S_input = np.abs(librosa.stft(y_input, n_fft=window_size, hop_length=hop_length)).astype(np.float32)
+    S_output = np.abs(librosa.stft(y_output, n_fft=window_size, hop_length=hop_length)).astype(np.float32)
+
+    norm = S_input.max()
+    S_input /= norm
+    S_output /= norm
+
+    np.savez(filename, S_input=S_input, S_output=S_output)
     
-    norm = S_mix.max()
-    S_mix /= norm
-    S_inst /= norm
-    S_vocal /= norm
-    
-    np.savez(os.path.join('./Spectrogram',filename+'.npz'),mix=S_mix,inst=S_inst ,vocal=S_vocal)
-    
-def LoadSpectrogram(target="vocal") :
-    filelist = find_files('./Spectrogram', ext="npz")
+def LoadSpectrogram(path_spectro) :
+    filelist = find_files(path_spectro, ext="npz")
     x_list = []
     y_list = []
     for file in filelist :
         data = np.load(file)
-        x_list.append(data['mix'])
-        if target == "vocal" :
-            y_list.append(data['vocal'])
-        else :
-            y_list.append(data['inst'])
+        x_list.append(data['S_input'])
+        y_list.append(data['S_output'])
     return x_list, y_list
 
 
@@ -58,13 +54,13 @@ def Magnitude_phase(spectrogram) :
     return Magnitude_list, Phase_list
 
 
-def sampling(X_mag,Y_mag) :
+def sampling(X_mag, Y_mag):
     X = []
     y = []
-    for mix, target in zip(X_mag,Y_mag) :
-        starts = np.random.randint(0, mix.shape[1] - patch_size, (mix.shape[1] - patch_size) // SAMPLING_STRIDE)
+    for x, target in zip(X_mag, Y_mag):
+        starts = np.random.randint(0, x.shape[1] - patch_size, (x.shape[1] - patch_size) // SAMPLING_STRIDE)
         for start in starts:
             end = start + patch_size
-            X.append(mix[1:, start:end, np.newaxis])
+            X.append(x[1:, start:end, np.newaxis])
             y.append(target[1:, start:end, np.newaxis])
     return np.asarray(X, dtype=np.float32), np.asarray(y, dtype=np.float32)

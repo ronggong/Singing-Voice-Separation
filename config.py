@@ -1,4 +1,4 @@
-SR =  16000
+SR =  44100
 window_size = 1024
 hop_length = 768
 

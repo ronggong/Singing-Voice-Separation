@@ -1,11 +1,12 @@
 import tensorflow as tf
-from tensorflow.keras.layers import concatenate 
+from tensorflow.keras.layers import concatenate
+from config import *
 
 
 def U_Net(features, labels, mode) :
     # Input Layer 
     
-    input_layer = tf.reshape(features['mag'],[-1,512,128,1])
+    input_layer = tf.reshape(features['mag'], [-1, 512, 128, 1])
     
     # Convolutional Layer 1
     conv1 = tf.layers.batch_normalization(tf.layers.conv2d(inputs = input_layer, filters=16, kernel_size=[5,5], 
@@ -57,8 +58,7 @@ def U_Net(features, labels, mode) :
     deconv6 = tf.layers.conv2d_transpose(inputs = concatenate([deconv5,conv1],3), filters = 1, kernel_size = [5,5],
                                                                    strides = [2,2], padding="same", activation = tf.nn.relu)
     
-    predictions = {'outputs': deconv6
-                  }
+    predictions = {'outputs': deconv6}
     
     if mode == tf.estimator.ModeKeys.PREDICT:
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
@@ -67,10 +67,7 @@ def U_Net(features, labels, mode) :
     
     if mode == tf.estimator.ModeKeys.TRAIN:
         optimizer = tf.train.AdamOptimizer(1e-4)
-        train_op = optimizer.minimize(
-            loss=loss,
-            global_step=tf.train.get_global_step())
+        train_op = optimizer.minimize(loss=loss, global_step=tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
     
-    return tf.estimator.EstimatorSpec(
-        mode=mode, loss=loss)
+    return tf.estimator.EstimatorSpec(mode=mode, loss=loss)
