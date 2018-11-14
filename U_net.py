@@ -64,10 +64,13 @@ def U_Net(features, labels, mode) :
         return tf.estimator.EstimatorSpec(mode=mode, predictions=predictions)
     
     loss = tf.losses.absolute_difference(labels,deconv6)
+
+    if mode == tf.estimator.ModeKeys.EVAL:
+        return tf.estimator.EstimatorSpec(mode=mode, loss=loss)
     
     if mode == tf.estimator.ModeKeys.TRAIN:
         optimizer = tf.train.AdamOptimizer(1e-4)
         train_op = optimizer.minimize(loss=loss, global_step=tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
     
-    return tf.estimator.EstimatorSpec(mode=mode, loss=loss)
+    # return tf.estimator.EstimatorSpec(mode=mode, loss=loss)
