@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 import tensorflow as tf
 
 from U_net import U_Net
@@ -75,7 +78,7 @@ def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone)
 if __name__ == '__main__' :
 #     path_spectro = "../test_train_dataset_spectro"
 #     train(path_spectro)
-    path_spectro_macbook_tone = "/Users/jukedeckintern/Documents/de-artefact_data/tone/macbook_reverb_spectro"
-    path_spectro_huawei_sla_al00_tone = "/Users/jukedeckintern/Documents/de-artefact_data/tone/huawei_sla_al00_reverb_spectro"
+    path_spectro_macbook_tone = "/home/rong/de-artefact_data/tone/macbook_reverb_spectro"
+    path_spectro_huawei_sla_al00_tone = "/home/rong/de-artefact_data/tone/huawei_sla_al00_reverb_spectro"
     train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone) 
     print("Training Complete!!")
