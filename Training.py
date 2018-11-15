@@ -10,29 +10,34 @@ mpl.use('TkAgg')
 import matplotlib.pyplot as plt
 
 
-def train(path_spectro) : 
+def train_val(path_spectro_macbook, path_spectro_huawei_sla_al00):
     
-    X_list, Y_list = LoadSpectrogram(path_spectro) # Mix spectrogram
-    X_mag, X_phase = Magnitude_phase(X_list)
-    Y_mag,_ = Magnitude_phase(Y_list)
-    deep_u_net = tf.estimator.Estimator(model_fn=U_Net, model_dir="./model")
-    
-    for e in range(EPOCH) :
-        # Random sampling for training
-        X, y = sampling(X_mag, Y_mag)
-        train_input_fn = tf.estimator.inputs.numpy_input_fn(x = {"mag": X}, y = y, batch_size = BATCH, num_epochs = 1, shuffle = False)
-    
-        deep_u_net.train(input_fn = train_input_fn)
-
-
-def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone) : 
+    X_list_macbook, Y_list_macbook = [], []
+    X_list_huawei_sla_al00, Y_list_huawei_sla_al00 = [], []
+    # three-level of folder structure
+    folders_1st = os.listdir(path_spectro_macbook)
+    for f_1st in folders_1st:
+        if "DS_Store" not in f_1st:
+            folders_2nd = os.listdir(os.path.join(path_spectro_macbook, f_1st))
+            for f_2nd in folders_2nd:
+                if "DS_Store" not in f_2nd:
+                    folders_3rd = os.listdir(os.path.join(path_spectro_macbook, f_1st, f_2nd))
+                    for f_3rd in folders_3rd:
+                        if "DS_Store" not in f_3rd:
+                            path_3rd_macbook = os.path.join(path_spectro_macbook, f_1st, f_2nd, f_3rd)
+                            X_list_macbook_temp, Y_list_macbook_temp = LoadSpectrogram(path_3rd_macbook)
+                            X_list_macbook += X_list_macbook_temp
+                            Y_list_macbook += Y_list_macbook_temp
+                            path_3rd_huawei_sla_al00 = os.path.join(path_spectro_huawei_sla_al00, f_1st, f_2nd, f_3rd)
+                            X_list_huawei_sla_al00_temp, Y_list_huawei_sla_al00_temp = LoadSpectrogram(path_3rd_huawei_sla_al00)
+                            X_list_huawei_sla_al00 += X_list_huawei_sla_al00_temp
+                            Y_list_huawei_sla_al00 += Y_list_huawei_sla_al00_temp
+                                    
     # macbook spectrogram
-    X_list_macbook, Y_list_macbook = LoadSpectrogram(path_spectro_macbook_tone)
     X_mag_macbook, X_phase_macbook = Magnitude_phase(X_list_macbook)
     Y_mag_macbook, _ = Magnitude_phase(Y_list_macbook)
 
     # huawei mobile phone spectrogram
-    X_list_huawei_sla_al00, Y_list_huawei_sla_al00 = LoadSpectrogram(path_spectro_huawei_sla_al00_tone)
     X_mag_huawei_sla_al00, X_phase_huawei_sla_al00 = Magnitude_phase(X_list_huawei_sla_al00)
     Y_mag_huawei_sla_al00, _ = Magnitude_phase(Y_list_huawei_sla_al00)
 
@@ -40,7 +45,7 @@ def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone)
     Y_mag = Y_mag_macbook + Y_mag_huawei_sla_al00
     X_phase = X_phase_macbook + X_phase_huawei_sla_al00
 
-    rs = ShuffleSplit(n_splits=1, test_size=0.25, random_state=0, train_size=None)
+    rs = ShuffleSplit(n_splits=1, test_size=0.1, random_state=0, train_size=None)
     for train_index, test_index in rs.split(X_mag):
         X_mag_train = [X_mag[ii] for ii in train_index]
         X_mag_val = [X_mag[ii] for ii in test_index]
@@ -87,7 +92,7 @@ def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone)
 if __name__ == '__main__' :
 #     path_spectro = "../test_train_dataset_spectro"
 #     train(path_spectro)
-    path_spectro_macbook_tone = "/Users/jukedeckintern/Documents/de-artefact_data/tone/macbook_reverb_spectro"
-    path_spectro_huawei_sla_al00_tone = "/Users/jukedeckintern/Documents/de-artefact_data/tone/huawei_sla_al00_reverb_spectro"
-    train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone) 
+    path_spectro_macbook = "/Users/jukedeckintern/Documents/de-artefact_data/VocalSet/macbook_reverb_spectro"
+    path_spectro_huawei_sla_al00 = "/Users/jukedeckintern/Documents/de-artefact_data/VocalSet/huawei_sla_al00_reverb_spectro"
+    train_val(path_spectro_macbook, path_spectro_huawei_sla_al00) 
     print("Training Complete!!")

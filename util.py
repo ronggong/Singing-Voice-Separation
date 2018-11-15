@@ -68,6 +68,8 @@ def sampling(X_mag, Y_mag):
     X = []
     y = []
     for x, target in zip(X_mag, Y_mag):
+        if x.shape[1]-patch_size<=0: # in case of the sample is too short
+            continue
         starts = np.random.randint(0, x.shape[1] - patch_size, (x.shape[1] - patch_size) // SAMPLING_STRIDE)
         for start in starts:
             end = start + patch_size
