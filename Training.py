@@ -36,7 +36,7 @@ def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone)
     Y_mag_huawei_sla_al00, _ = Magnitude_phase(Y_list_huawei_sla_al00)
 
     X_mag = X_mag_macbook + X_mag_huawei_sla_al00
-    Y_mag = Y_mag_huawei_sla_al00 + Y_mag_huawei_sla_al00
+    Y_mag = Y_mag_macbook + Y_mag_huawei_sla_al00
     X_phase = X_phase_macbook + X_phase_huawei_sla_al00
 
     rs = ShuffleSplit(n_splits=1, test_size=0.25, random_state=0, train_size=None)
@@ -74,7 +74,7 @@ def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone)
             es_counter += 1
             if es_counter >= EARLY_STOPPING_PATIENCE:
                 break
-        
+
 if __name__ == '__main__' :
 #     path_spectro = "../test_train_dataset_spectro"
 #     train(path_spectro)
