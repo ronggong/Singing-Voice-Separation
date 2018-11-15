@@ -7,6 +7,10 @@ from util import *
 from config import *
 from U_net import U_Net
 
+import matplotlib as mpl
+mpl.use('TkAgg')
+import matplotlib.pyplot as plt
+
 
 def main(path_input, path_output) :
     
@@ -33,6 +37,14 @@ def main(path_input, path_output) :
         predictions = list(deep_u_net.predict(input_fn=predict_input_fn))
         mask = predictions[0]['outputs']
         mask = mask.reshape(512, patch_size)
+
+        f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+        ax1.imshow(mask, origin='lower')
+        ax1.set_title('Predicted spectro')
+        # ax2.imshow(y_train[ii].reshape((512, 128)), origin='lower')
+        # ax2.set_title('Clean tone spectrogram')
+        plt.show()
+
         output_mask[:, START:END] = mask
     
     target_pred_mag = np.vstack((np.zeros((output_mask.shape[1])), output_mask))
