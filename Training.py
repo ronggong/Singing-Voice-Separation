@@ -92,7 +92,7 @@ def train_val(path_spectro_macbook, path_spectro_huawei_sla_al00):
 if __name__ == '__main__' :
 #     path_spectro = "../test_train_dataset_spectro"
 #     train(path_spectro)
-    path_spectro_macbook = "/Users/jukedeckintern/Documents/de-artefact_data/VocalSet/macbook_reverb_spectro"
-    path_spectro_huawei_sla_al00 = "/Users/jukedeckintern/Documents/de-artefact_data/VocalSet/huawei_sla_al00_reverb_spectro"
+    path_spectro_macbook = "/home/rong/de-artefact_data/VocalSet/macbook_reverb_spectro"
+    path_spectro_huawei_sla_al00 = "/home/rong/de-artefact_data/VocalSet/huawei_sla_al00_reverb_spectro"
     train_val(path_spectro_macbook, path_spectro_huawei_sla_al00) 
     print("Training Complete!!")
