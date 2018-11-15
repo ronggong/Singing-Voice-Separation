@@ -5,9 +5,9 @@ from util import *
 from config import *
 from sklearn.model_selection import ShuffleSplit
 
-import matplotlib as mpl
-mpl.use('TkAgg')
-import matplotlib.pyplot as plt
+# import matplotlib as mpl
+# mpl.use('TkAgg')
+# import matplotlib.pyplot as plt
 
 
 def train_val(path_spectro_macbook, path_spectro_huawei_sla_al00):
