@@ -5,6 +5,10 @@ from util import *
 from config import *
 from sklearn.model_selection import ShuffleSplit
 
+import matplotlib as mpl
+mpl.use('TkAgg')
+import matplotlib.pyplot as plt
+
 
 def train(path_spectro) : 
     
@@ -33,7 +37,7 @@ def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone)
     Y_mag_huawei_sla_al00, _ = Magnitude_phase(Y_list_huawei_sla_al00)
 
     X_mag = X_mag_macbook + X_mag_huawei_sla_al00
-    Y_mag = Y_mag_huawei_sla_al00 + Y_mag_huawei_sla_al00
+    Y_mag = Y_mag_macbook + Y_mag_huawei_sla_al00
     X_phase = X_phase_macbook + X_phase_huawei_sla_al00
 
     rs = ShuffleSplit(n_splits=1, test_size=0.25, random_state=0, train_size=None)
@@ -54,6 +58,14 @@ def train_val_tone(path_spectro_macbook_tone, path_spectro_huawei_sla_al00_tone)
     for e in range(EPOCH) :
         # Random sampling for training
         X_train, y_train = sampling(X_mag_train, Y_mag_train)
+
+        # for ii in range(len(X_train)):
+        #     f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+        #     ax1.imshow(X_train[ii].reshape((512, 128)), origin='lower')
+        #     ax1.set_title('IR convolved spectrogram')
+        #     ax2.imshow(y_train[ii].reshape((512, 128)), origin='lower')
+        #     ax2.set_title('Clean tone spectrogram')
+        #     plt.show()
         train_input_fn = tf.estimator.inputs.numpy_input_fn(x = {"mag": X_train}, y = y_train, batch_size = BATCH, num_epochs = 1, shuffle = False)
     
         # Random sampling for validation

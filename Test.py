@@ -8,10 +8,9 @@ from config import *
 from U_net import U_Net
 
 
-def main() :
-    music_path = "../test_test_dataset/f3_scales_c_slow_forte_a_reverb.wav"
+def main(path_input, path_output) :
     
-    input_wav_mag, input_wav_phase = LoadAudio(music_path)
+    input_wav_mag, input_wav_phase = LoadAudio(path_input)
 
     pad_size = patch_size - input_wav_mag.shape[1] % patch_size
 
@@ -39,7 +38,15 @@ def main() :
     target_pred_mag = np.vstack((np.zeros((output_mask.shape[1])), output_mask))
     target_pred_mag = target_pred_mag[:, :target_pred_mag.shape[1]-pad_size]
     # target_pred_mag = np.vstack((np.zeros((128)), mask.reshape(512, 128)))
-    SaveAudio(music_path[:-4]+"_output.wav",target_pred_mag, input_wav_phase)
+    SaveAudio(path_output, target_pred_mag, input_wav_phase)
 
 if __name__ == "__main__" : 
-    main()
+    sub_folders = ["macbook_reverb_test", "huawei_sla_al00_reverb_test"]
+    path_root = "/Users/jukedeckintern/Documents/de-artefact_data/tone/"
+    for sf in sub_folders:
+        filenames = os.listdir(os.path.join(path_root, sf))
+        for f in filenames:
+            if f.endswith('.wav'):
+                path_input = os.path.join(path_root, sf, f)
+                path_output = os.path.join(path_root, sf+'_transformed', f)
+                main(path_input, path_output)

@@ -6,6 +6,7 @@ import os, re
 import numpy as np
 from config import *
 
+
 def LoadAudio(file_path) :
     y, sr = load(file_path, sr=SR)
     stft = librosa.stft(y,n_fft=window_size, hop_length=hop_length)
@@ -37,8 +38,17 @@ def LoadSpectrogram(path_spectro) :
     filelist = find_files(path_spectro, ext="npz")
     x_list = []
     y_list = []
-    for file in filelist :
-        data = np.load(file)
+    for fl in filelist :
+        data = np.load(fl)
+
+        # f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+        # ax1.imshow(data['S_input'], origin='lower')
+        # ax1.set_title('IR convolved spectrogram')
+        # ax2.imshow(data['S_output'], origin='lower')
+        # ax2.set_title('Clean tone spectrogram')
+        # f.suptitle(fl)
+        # plt.show()
+
         x_list.append(data['S_input'])
         y_list.append(data['S_output'])
     return x_list, y_list
@@ -63,4 +73,12 @@ def sampling(X_mag, Y_mag):
             end = start + patch_size
             X.append(x[1:, start:end, np.newaxis])
             y.append(target[1:, start:end, np.newaxis])
-    return np.asarray(X, dtype=np.float32), np.asarray(y, dtype=np.float32)
+    
+    idx_shuffle = np.arange(len(X))
+    np.random.shuffle(idx_shuffle)
+    X = [X[ii] for ii in idx_shuffle]
+    y = [y[ii] for ii in idx_shuffle]
+    # shuffle the patch
+    X = np.asarray(X, dtype=np.float32)
+    y = np.asarray(y, dtype=np.float32)
+    return X, y
