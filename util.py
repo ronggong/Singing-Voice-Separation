@@ -63,4 +63,12 @@ def sampling(X_mag, Y_mag):
             end = start + patch_size
             X.append(x[1:, start:end, np.newaxis])
             y.append(target[1:, start:end, np.newaxis])
-    return np.asarray(X, dtype=np.float32), np.asarray(y, dtype=np.float32)
+    
+    idx_shuffle = np.arange(len(X))
+    np.random.shuffle(idx_shuffle)
+    X = [X[ii] for ii in idx_shuffle]
+    y = [y[ii] for ii in idx_shuffle]
+    # shuffle the patch
+    X = np.asarray(X, dtype=np.float32)
+    y = np.asarray(y, dtype=np.float32)
+    return X, y
