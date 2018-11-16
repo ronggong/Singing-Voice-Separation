@@ -56,7 +56,7 @@ def U_Net(features, labels, mode) :
                                                                  strides = [2,2], padding="same", activation = tf.nn.relu))
     # Deconvolutional Layer6
     deconv6 = tf.layers.conv2d_transpose(inputs = concatenate([deconv5,conv1],3), filters = 1, kernel_size = [5,5],
-                                                                   strides = [2,2], padding="same", activation = tf.nn.sigmoid)
+                                                                   strides = [2,2], padding="same", activation = tf.nn.relu)
     
     predictions = {'outputs': deconv6}
     
